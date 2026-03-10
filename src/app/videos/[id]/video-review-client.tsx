@@ -8,6 +8,7 @@ import { EventTagForm } from "@/components/event-tag-form";
 import { PlayerManager } from "@/components/player-manager";
 import { VideoPlayer } from "@/components/video-player";
 import { Player, TaggedEvent, Video } from "@/lib/types";
+import { formatSeconds } from "@/lib/utils";
 
 type VideoReviewClientProps = {
   videoId: string;
@@ -86,6 +87,12 @@ export function VideoReviewClient({ videoId }: VideoReviewClientProps) {
       </div>
 
       <VideoPlayer src={video.public_url} onTimeChange={setCurrentTime} />
+      <div className="card">
+        <p className="muted">
+          Current time: {formatSeconds(currentTime)} | Events: {events.length} | Players:{" "}
+          {players.length}
+        </p>
+      </div>
 
       <div className="grid-two">
         <EventTagForm

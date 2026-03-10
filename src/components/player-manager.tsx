@@ -51,6 +51,7 @@ export function PlayerManager({ players, onPlayersUpdated }: PlayerManagerProps)
   return (
     <section className="card">
       <h2>Players</h2>
+      <p className="muted">Create player records so events can be linked to people.</p>
       <form className="inline-form" onSubmit={handleSubmit}>
         <input
           required
@@ -69,14 +70,18 @@ export function PlayerManager({ players, onPlayersUpdated }: PlayerManagerProps)
         </button>
       </form>
       {errorMessage ? <p className="error">{errorMessage}</p> : null}
-      <ul className="list">
-        {players.map((player) => (
-          <li key={player.id}>
-            {player.name}
-            {player.jersey_number !== null ? ` (#${player.jersey_number})` : ""}
-          </li>
-        ))}
-      </ul>
+      {players.length === 0 ? (
+        <p className="muted">No players created yet.</p>
+      ) : (
+        <ul className="list">
+          {players.map((player) => (
+            <li key={player.id}>
+              {player.name}
+              {player.jersey_number !== null ? ` (#${player.jersey_number})` : ""}
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   );
 }

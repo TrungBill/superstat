@@ -8,15 +8,23 @@ export default async function Home() {
   return (
     <div className="container stack">
       <div className="top-bar">
-        <h1>Basketball Video Library</h1>
+        <div className="stack-tight">
+          <h1>Basketball Video Library</h1>
+          <p className="muted">
+            {videos.length} {videos.length === 1 ? "video" : "videos"} available
+          </p>
+        </div>
         <Link className="button-link" href="/upload">
-          Upload new video
+          Upload Video
         </Link>
       </div>
 
       {videos.length === 0 ? (
         <div className="card">
           <p className="muted">No videos uploaded yet.</p>
+          <p className="muted">
+            Start by uploading a game clip, then open it to tag events and players.
+          </p>
         </div>
       ) : (
         <ul className="video-list">
@@ -28,7 +36,9 @@ export default async function Home() {
                   Uploaded {new Date(video.created_at).toLocaleString()}
                 </p>
               </div>
-              <Link href={`/videos/${video.id}`}>Review</Link>
+              <Link className="button-link subtle" href={`/videos/${video.id}`}>
+                Open Review
+              </Link>
             </li>
           ))}
         </ul>

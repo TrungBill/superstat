@@ -10,7 +10,7 @@ Prototype web application for uploading basketball game footage and tagging time
 
 ## Features
 
-- Upload basketball video files to Supabase Storage
+- Upload basketball video files to Supabase Storage (direct browser upload for large files)
 - Persist video metadata in Postgres
 - Browse uploaded videos in a library view
 - Open a dedicated review page for each video
@@ -56,6 +56,7 @@ npm run dev
 
 1. Create a new Supabase project in the dashboard.
 2. Create a public storage bucket named `videos`.
+   - Set bucket max file size high enough for your expected footage (for example `500MB` or `1GB`).
 3. In **Project Settings -> API**, copy:
    - Project URL
    - `anon` key

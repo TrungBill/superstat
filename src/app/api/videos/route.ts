@@ -17,9 +17,12 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const formData = await request.formData();
-    const title = String(formData.get("title") ?? "").trim();
-    const file = formData.get("file");
+    const body = (await request.json()) as {
+      title?: string;
+      filePath?: string;
+    };
+    const title = body.title?.trim() ?? "";
+    const filePath = body.filePath?.trim() ?? "";
 
     if (!title) {
       return NextResponse.json(
@@ -28,40 +31,14 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!(file instanceof File)) {
+    if (!filePath) {
       return NextResponse.json(
-        { error: "A valid video file is required." },
-        { status: 400 }
-      );
-    }
-
-    if (!file.type.startsWith("video/")) {
-      return NextResponse.json(
-        { error: "Only video uploads are supported." },
+        { error: "filePath is required." },
         { status: 400 }
       );
     }
 
     const supabase = createSupabaseAdminClient();
-    const sanitizedName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, "_");
-    const filePath = `${Date.now()}-${crypto.randomUUID()}-${sanitizedName}`;
-    const fileBuffer = Buffer.from(await file.arrayBuffer());
-
-    const { error: uploadError } = await supabase.storage
-      .from(VIDEOS_BUCKET)
-      .upload(filePath, fileBuffer, {
-        cacheControl: "3600",
-        contentType: file.type,
-        upsert: false,
-      });
-
-    if (uploadError) {
-      return NextResponse.json(
-        { error: uploadError.message },
-        { status: 500 }
-      );
-    }
-
     const {
       data: { publicUrl },
     } = supabase.storage.from(VIDEOS_BUCKET).getPublicUrl(filePath);
@@ -77,7 +54,6 @@ export async function POST(request: Request) {
       .single();
 
     if (insertError) {
-      await supabase.storage.from(VIDEOS_BUCKET).remove([filePath]);
       return NextResponse.json(
         { error: insertError.message },
         { status: 500 }

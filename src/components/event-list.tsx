@@ -13,11 +13,13 @@ export function EventList({ events }: EventListProps) {
         <p className="muted">No events tagged yet.</p>
       ) : (
         <ul className="event-list">
-          {events.map((event) => (
+          {events.map((event, index) => (
             <li key={event.id} className="event-item">
               <div className="event-top-row">
-                <strong>{event.event_type}</strong>
-                <span>{formatSeconds(event.timestamp_seconds)}</span>
+                <strong>
+                  {index + 1}. {event.event_type}
+                </strong>
+                <span className="pill">{formatSeconds(event.timestamp_seconds)}</span>
               </div>
               {event.players.length > 0 ? (
                 <p className="muted">

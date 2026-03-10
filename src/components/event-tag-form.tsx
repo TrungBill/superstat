@@ -102,21 +102,29 @@ export function EventTagForm({
 
         <div>
           <p className="label">Players involved</p>
-          <div className="checkbox-grid">
-            {players.map((player) => (
-              <label key={player.id} className="checkbox-item">
-                <input
-                  type="checkbox"
-                  checked={selectedPlayers.includes(player.id)}
-                  onChange={() => togglePlayer(player.id)}
-                />
-                <span>
-                  {player.name}
-                  {player.jersey_number !== null ? ` (#${player.jersey_number})` : ""}
-                </span>
-              </label>
-            ))}
-          </div>
+          {players.length === 0 ? (
+            <p className="muted">
+              No players yet. Add players in the panel on the right, then select them here.
+            </p>
+          ) : (
+            <div className="checkbox-grid">
+              {players.map((player) => (
+                <label key={player.id} className="checkbox-item">
+                  <input
+                    type="checkbox"
+                    checked={selectedPlayers.includes(player.id)}
+                    onChange={() => togglePlayer(player.id)}
+                  />
+                  <span>
+                    {player.name}
+                    {player.jersey_number !== null
+                      ? ` (#${player.jersey_number})`
+                      : ""}
+                  </span>
+                </label>
+              ))}
+            </div>
+          )}
         </div>
 
         <button disabled={isSubmitting} type="submit">
