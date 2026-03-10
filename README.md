@@ -2,6 +2,19 @@
 
 Prototype web application for uploading basketball game footage and tagging timestamped events with associated players.
 
+## Quick Start (Local)
+
+```bash
+git clone https://github.com/TrungBill/superstat.git
+cd superstat
+npm install
+cp .env.example .env.local
+# fill .env.local with keys from email
+npm run dev
+```
+
+Open `http://localhost:3000`.
+
 ## Stack
 
 - Next.js (App Router) + React + TypeScript
@@ -28,102 +41,6 @@ Prototype web application for uploading basketball game footage and tagging time
 - assist
 - steal
 
-## Local Development
-
-1. Install dependencies:
-
-```bash
-npm install
-```
-
-2. Create environment file:
-
-```bash
-cp .env.example .env.local
-```
-
-3. Fill `.env.local` with your Supabase credentials.
-
-4. Start dev server:
-
-```bash
-npm run dev
-```
-
-5. Open [http://localhost:3000](http://localhost:3000).
-
-## Supabase Setup
-
-1. Create a new Supabase project in the dashboard.
-2. Create a public storage bucket named `videos`.
-   - Set bucket max file size high enough for your expected footage (for example `500MB` or `1GB`).
-3. In **Project Settings -> API**, copy:
-   - Project URL
-   - `anon` key
-   - `service_role` key
-4. Add them to `.env.local`.
-
-## Git + Supabase Workflow (Seamless Setup)
-
-This repository is configured to use Supabase migrations, so database changes are versioned in git and can be pushed consistently to your Supabase project.
-
-### 1) Link local repo to your Supabase project
-
-```bash
-npm run supabase:login
-npx supabase link --project-ref <your-project-ref>
-```
-
-Get the project ref from your Supabase project URL:
-
-- `https://supabase.com/dashboard/project/<project-ref>/...`
-
-### 2) Apply current schema from migrations
-
-```bash
-npm run supabase:db:push
-```
-
-Current initial migration is stored at:
-
-- `supabase/migrations/20260310195800_init_schema.sql`
-
-### 3) Create future schema changes through migrations
-
-```bash
-npm run supabase:migration:new add_shot_chart_table
-```
-
-Then edit the new SQL file under `supabase/migrations/` and run:
-
-```bash
-npm run supabase:db:push
-```
-
-Commit the migration file with your feature code so app + database stay in sync.
-
-### 4) Optional automatic migration deploys via GitHub Actions
-
-Workflow file:
-
-- `.github/workflows/supabase-db-push.yml`
-
-Add these GitHub repository secrets:
-
-- `SUPABASE_ACCESS_TOKEN`
-- `SUPABASE_PROJECT_REF`
-- `SUPABASE_DB_PASSWORD`
-
-After that, pushes to `main` that modify `supabase/migrations/**` will automatically run `supabase db push`.
-
-## Environment Variables
-
-Defined in `.env.example`:
-
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY`
-
 ## Database Schema
 
 Primary migration source:
@@ -141,15 +58,24 @@ Tables:
 - `events`
 - `event_players`
 
-## Application Routes
+## Evaluation Criteria Mapping
 
-- `/` - video library
-- `/upload` - upload flow
-- `/videos/[id]` - review and tagging page
+### Next.js / React Knowledge
 
-## Notes
+- **Component structure:** UI is split into focused components (`video-player`, `event-tag-form`, `event-list`, `player-manager`) and page-level containers for upload, library, and review flows.
+- **State management:** React local state handles current playback time, form inputs, selected players, loading states, and error feedback.
+- **Routing:** Next.js App Router is used with clear routes: `/` (library), `/upload` (upload), and `/videos/[id]` (review).
+- **Clean code:** Shared constants/types/helpers are centralized in `src/lib`, API responsibilities are separated under `src/app/api`, and UI components remain presentation-focused.
 
-- This is an MVP intended for rapid iteration.
-- The app currently uses server-side privileged access for write operations.
-- For production hardening, add authentication and stricter user-scoped RLS policies.
-- Never commit credentials (database passwords, service tokens, API keys) to git.
+### Supabase Understanding
+
+- **Schema design:** Normalized relational schema uses `videos`, `players`, `events`, and `event_players` with UUID PKs, constraints, and indexes.
+- **Queries:** Data access helpers encapsulate list/get flows and event joins, then map DB rows to UI-facing typed models.
+- **Storage usage:** Videos are uploaded to Supabase Storage using signed direct browser upload URLs for better reliability with large files.
+- **Data relationships:** Many-to-many event/player association is implemented through `event_players`, with retrieval that resolves linked players per event.
+
+### Product Thinking
+
+- **Sensible UI flow:** Users go from upload -> library -> review/tagging in a straightforward sequence with minimal clicks.
+- **Good feature decisions:** Event types are constrained to relevant basketball actions; timestamps are captured from live playback to speed tagging.
+- **Usability for tagging workflows:** The review page surfaces current time, existing tags, player creation, and quick multi-select player association in one workspace.
