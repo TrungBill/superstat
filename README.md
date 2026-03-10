@@ -30,33 +30,18 @@ Open `http://localhost:3000`.
 - Tag events at specific timestamps
 - Create players and attach players to events
 
-## Event Types
+## How to Use the Application
 
-- 2pt made
-- 2pt missed
-- 3pt made
-- turnover
-- rebound
-- foul
-- assist
-- steal
-
-## Database Schema
-
-Primary migration source:
-
-- `supabase/migrations/`
-
-Legacy schema snapshot:
-
-- `supabase/schema.sql`
-
-Tables:
-
-- `videos`
-- `players`
-- `events`
-- `event_players`
+1. Open the app at `http://localhost:3000`.
+2. Click **Upload Video**.
+3. Enter a title and select a basketball video file.
+4. Submit the form and wait for upload + metadata save to complete.
+5. You will be redirected to the video review page.
+6. Play the video and pause at the moment you want to tag.
+7. Add players in the **Players** panel (optional but recommended first).
+8. In **Tag event**, choose event type, optional notes, and select players.
+9. Click **Save event** to store the tag at the current timestamp.
+10. Review all saved tags in **Tagged events** below the player.
 
 ## Evaluation Criteria Mapping
 
