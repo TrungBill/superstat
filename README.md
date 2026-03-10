@@ -56,13 +56,64 @@ npm run dev
 
 1. Create a new Supabase project in the dashboard.
 2. Create a public storage bucket named `videos`.
-3. In SQL Editor, run:
-   - `supabase/schema.sql`
-4. In **Project Settings -> API**, copy:
+3. In **Project Settings -> API**, copy:
    - Project URL
    - `anon` key
    - `service_role` key
-5. Add them to `.env.local`.
+4. Add them to `.env.local`.
+
+## Git + Supabase Workflow (Seamless Setup)
+
+This repository is configured to use Supabase migrations, so database changes are versioned in git and can be pushed consistently to your Supabase project.
+
+### 1) Link local repo to your Supabase project
+
+```bash
+npm run supabase:login
+npx supabase link --project-ref <your-project-ref>
+```
+
+Get the project ref from your Supabase project URL:
+
+- `https://supabase.com/dashboard/project/<project-ref>/...`
+
+### 2) Apply current schema from migrations
+
+```bash
+npm run supabase:db:push
+```
+
+Current initial migration is stored at:
+
+- `supabase/migrations/20260310195800_init_schema.sql`
+
+### 3) Create future schema changes through migrations
+
+```bash
+npm run supabase:migration:new add_shot_chart_table
+```
+
+Then edit the new SQL file under `supabase/migrations/` and run:
+
+```bash
+npm run supabase:db:push
+```
+
+Commit the migration file with your feature code so app + database stay in sync.
+
+### 4) Optional automatic migration deploys via GitHub Actions
+
+Workflow file:
+
+- `.github/workflows/supabase-db-push.yml`
+
+Add these GitHub repository secrets:
+
+- `SUPABASE_ACCESS_TOKEN`
+- `SUPABASE_PROJECT_REF`
+- `SUPABASE_DB_PASSWORD`
+
+After that, pushes to `main` that modify `supabase/migrations/**` will automatically run `supabase db push`.
 
 ## Environment Variables
 
@@ -74,7 +125,13 @@ Defined in `.env.example`:
 
 ## Database Schema
 
-Schema file: `supabase/schema.sql`
+Primary migration source:
+
+- `supabase/migrations/`
+
+Legacy schema snapshot:
+
+- `supabase/schema.sql`
 
 Tables:
 
@@ -94,3 +151,4 @@ Tables:
 - This is an MVP intended for rapid iteration.
 - The app currently uses server-side privileged access for write operations.
 - For production hardening, add authentication and stricter user-scoped RLS policies.
+- Never commit credentials (database passwords, service tokens, API keys) to git.
